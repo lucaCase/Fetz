@@ -1,0 +1,20 @@
+0-8 Idle
+9-12 Turn into direction
+13-16 Walk
+17-20 Walk to idle
+21-26 FF-Initial Frames
+27-30 FF-Charge
+31-43 FF-Execution
+44-48 Crouch
+49-53 UF-Initial Frames
+54-57 UF-Charge
+58-74 UF-Execution
+75-77 Jump initial
+78-79 Mid air
+80-82 Landing
+83-85 DF Initial Frames
+86-89 DF-Charge
+90-107 DF-Execution
+
+-.07 for 64 pixel high
+-0.730958 for 32 pixel high
