@@ -8,7 +8,7 @@ public class Border : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            collision.gameObject.GetComponent<Character>().Die();
+            collision.gameObject.GetComponent<Playable>().Die();
             Debug.Log("Died");
         }
     }

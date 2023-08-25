@@ -1,97 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
-public class Character : MonoBehaviour
+public class Character : Playable
 {
-    [Dependency]
-    protected Rigidbody2D rb;
-    private Animator anim;
-    
-    
-    
-    //UI
-    public TMPro.TextMeshProUGUI damageAmount;
-    public Gradient gradient;
-
-
-
-
-
-    /*
-    [Dependency]
-    protected Animator animator;
-    */
-
-
-
-    [Header("Groundcheck")]
-    [SerializeField]
-    Transform groundCheckTransform;
-
-    [SerializeField]
-    LayerMask groundLayerMask;
-
-    [SerializeField]
-    float groundCheckRadius;
-
     PlayerControls playerControls;
     Vector2 move;
     Vector2 fetz;
-
-    //-------------------------------- Private variables --------------------------------
-    //Movement related
-    private bool canMove = true;
-
-    //Jump related
-    private bool isGrounded = true;
-    private bool usedDoubleJump = false;
-
-    //Defence related
-    private bool isShielding = false;
-    private bool usedAirDodge = false;
-
-    //Other
-    private bool isCrouching = false;
-
-    //Fetz-Attack related
-    private bool isFetzingForward = false;
-    private bool isFetzingDown = false;
-    private bool isFetzingUp = false;
-
-    //Attack-movement related
-    private bool isAttacking = false;
-
-    //Essentials
-    public float damage = 0.1f;
-    public int stocks = 3;
-
-    [Header("Jumpforces")]
-    [Tooltip("Jumpforce when on the ground")]
-    public float groundJumpForce;
-    [Tooltip("Jumpforce when in the air")]
-    public float airJumpForce;
-
-    [Header("Speeds")]
-    [Tooltip("Speed when on the ground")]
-    public float groundSpeed;
-    [Tooltip("Speed when in the air")]
-    public float airSpeed;
-    [Tooltip("Speed when crouching")]
-    public float crouchSpeed;
-
-    [Header("Character Specialities")]
-    [Tooltip("Can walk while crouching")]
-    public bool canWalkWhileCrouching;
-
-    [Header("Shield")]
-    [Tooltip("Shield object of the character")]
-    public GameObject shield;
-
-    private SpriteRenderer sr;
 
     private void Awake()
     {
@@ -122,8 +42,6 @@ public class Character : MonoBehaviour
         playerControls.GamePlay.Shield.canceled += ctx => UnShield();
 
         playerControls.GamePlay.Grab.performed += ctx => Grab();
-
-        damageAmount.color = gradient.Evaluate(damage);
     }
 
     private void NeutralAttack()
@@ -220,12 +138,16 @@ public class Character : MonoBehaviour
                     {
                         isFetzingForward = true;
                         anim.SetTrigger("FetzingForward");
-                        if (fetz.x > 0)
+                        if (canTurn)
                         {
-                            transform.localScale = new Vector2(1, 1);
-                        } else
-                        {
-                            transform.localScale = new Vector2(-1, 1);
+                            if (fetz.x > 0)
+                            {
+                                transform.localScale = new Vector2(1, 1);
+                            }
+                            else
+                            {
+                                transform.localScale = new Vector2(-1, 1);
+                            }
                         }
                     }
                 }
@@ -283,31 +205,9 @@ public class Character : MonoBehaviour
 
 
 
-    private void Crouch()
-    {
-        if (isGrounded)
-        {
-            if (isShielding)
-            {
-                Debug.Log("Spot Dodge");
-            }
-            else
-            {
-                sr.color = Color.red;
-                isCrouching = true;
-            }
-        }
-        else
-        {
-            rb.gravityScale = 3;
-        }
-    }
+    
 
-    private void UnCrouch()
-    {
-        sr.color = Color.white;
-        isCrouching = false;
-    }
+    
 
     private void Shield()
     {
@@ -315,6 +215,7 @@ public class Character : MonoBehaviour
         {
             shield.SetActive(true);
             isShielding = true;
+            canMove = false;
             UnCrouch();
         }
         else
@@ -336,16 +237,9 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void UnShield()
-    {
-        shield.SetActive(false);
-        isShielding = false;
-    }
+    
 
-    private void Grab()
-    {
-        Debug.Log("Grabbed");
-    }
+    
 
 
 
@@ -361,16 +255,19 @@ public class Character : MonoBehaviour
     private void Update()
     {
         SetGroundcheck();
-        canMove = CheckIfAbleToMove();
         if (canMove)
         {
             anim.SetFloat("MoveX", Mathf.Abs(move.x));
         }
-        Flip();
+        if (canTurn)
+        {
+            Flip();
+        }
         if (fetz != Vector2.zero)
         {
             FetzAttack();
-        } else
+        }
+        else
         {
             isFetzingForward = false;
             isFetzingUp = false;
@@ -382,21 +279,12 @@ public class Character : MonoBehaviour
         anim.SetBool("IsChargingUp", isFetzingUp);
 
 
-        
+
     }
 
-    private void Flip()
+    public void Jump()
     {
-        if ((transform.localScale.x == 1 && move.x < 0) || (transform.localScale.x == -1 && move.x > 0))
-        {
-            transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
-        }
-        TakeDamage(.1f);
-    }
-
-    private void Jump()
-    {
-        if (isGrounded || !usedDoubleJump)
+        if ((isGrounded || !usedDoubleJump) && canJump)
         {
             float jumpForce = groundJumpForce;
             if (isGrounded)
@@ -418,6 +306,15 @@ public class Character : MonoBehaviour
     }
 
 
+    private void Flip()
+    {
+        if ((transform.localScale.x == 1 && move.x < 0) || (transform.localScale.x == -1 && move.x > 0))
+        {
+            transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
+        }
+    }
+
+
     private void OnEnable()
     {
         playerControls.GamePlay.Enable();
@@ -426,84 +323,5 @@ public class Character : MonoBehaviour
     private void OnDisable()
     {
         playerControls.GamePlay.Disable();
-    }
-
-    private void SetGroundcheck()
-    {
-        isGrounded = Physics2D.OverlapCircle(groundCheckTransform.position, groundCheckRadius, groundLayerMask);
-        if (isGrounded)
-        {
-            usedDoubleJump = false;
-            usedAirDodge = false;
-            rb.gravityScale = 2;
-        }
-        anim.SetBool("IsGrounded", isGrounded);
-    }
-
-    private bool CheckIfAbleToMove()
-    {
-        if (isCrouching)
-        {
-            if (!canWalkWhileCrouching)
-            {
-                return false;
-            }
-        }
-        if (isShielding || isAttacking)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    private void SetPosition(float pos)
-    {
-        transform.position = new Vector3(transform.position.x, pos, transform.position.z);
-
-    }
-
-    private void resetAnimation()
-    {
-        anim.ResetTrigger("FetzingForward");
-        anim.ResetTrigger("FetzingDown");
-        anim.ResetTrigger("FetzingUp");
-    }
-
-    private void SetGravity(int gravity)
-    {
-        rb.gravityScale = gravity;
-    }
-
-    private void SetIsAttacking(int isAttacking)
-    {
-        this.isAttacking = (isAttacking == 1 ? true : false);
-    }
-
-    public void Die()
-    {
-        stocks--;
-        if (stocks == 0)
-        {
-
-        } else
-        {
-            transform.position = new Vector2(0f, 5f);
-            damage = 0;
-            rb.velocity = new Vector2(0, 0);
-        }
-    }
-
-    public void TakeDamage(float amount, bool hasKnockback)
-    {
-        damage = Mathf.Clamp(damage + amount, 0f, 999.9f);
-
-
-        damageAmount.text = damage.ToString("0.0") + "%";
-        damageAmount.color = gradient.Evaluate(damage / 1000.0f);
-    }
-
-    public void TakeDamage(float amount)
-    {
-        TakeDamage(amount, true);
     }
 }

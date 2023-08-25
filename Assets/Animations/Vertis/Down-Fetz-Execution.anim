@@ -131,6 +131,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0
+    functionName: StopFetzAttackMethodCoroutine
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.9166667
     functionName: resetAnimation
     data: 
@@ -154,6 +161,20 @@ AnimationClip:
     messageOptions: 0
   - time: 0.9166667
     functionName: SetIsAttacking
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.9166667
+    functionName: SetCanMoveToTrue
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.9166667
+    functionName: SetCanJumpToTrue
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
