@@ -104,7 +104,7 @@ AnimationClip:
     messageOptions: 0
   - time: 0.25
     functionName: SetActiveHitbox
-    data: Vertis-Horn-FF
+    data: Vertis-FF-Horn
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

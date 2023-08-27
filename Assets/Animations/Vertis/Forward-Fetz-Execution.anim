@@ -99,21 +99,21 @@ AnimationClip:
     messageOptions: 0
   - time: 0.033333335
     functionName: SetActiveHitbox
-    data: Vertis-Main-FF
+    data: Vertis-FF-Main
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.2
     functionName: SetInActiveHitbox
-    data: Vertis-Main-FF
+    data: Vertis-FF-Main
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.38333333
     functionName: SetInActiveHitbox
-    data: Vertis-Horn-FF
+    data: Vertis-FF-Horn
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

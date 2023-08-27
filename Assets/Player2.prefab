@@ -830,6 +830,7 @@ MonoBehaviour:
   - {fileID: 5369551226025710599}
   - {fileID: 1972380680937672232}
   profileImage: {fileID: 1187337073157593577}
+  damageText: {fileID: 0}
 --- !u!1 &8666874539844307440
 GameObject:
   m_ObjectHideFlags: 0
